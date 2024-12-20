@@ -165,3 +165,5 @@ Scaling: Scale the BankApp deployment if needed:
 kubectl scale deployment bankapp-deployment --replicas=3 -n bankapp-namespace
 ```
 Monitoring: Use tools like Prometheus or kubectl top to monitor resource usage.
+
+### Configure application to AutoScale [vpa_and_hpa](hpa_vpa.md)
