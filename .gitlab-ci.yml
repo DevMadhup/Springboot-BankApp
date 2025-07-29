@@ -1,0 +1,59 @@
+include:
+- template: Security/SAST.gitlab-ci.yml
+- template: Security/Secret-Detection.gitlab-ci.yml
+- template: Code-Quality.gitlab-ci.yml
+- template: Security/Dependency-Scanning.gitlab-ci.yml
+
+stages:
+    - code
+    - test
+    - quality
+    - dependency-scanning
+    - sast
+    - build
+    - deploy
+
+code_checkout:
+    image: maven
+    stage: code
+    tags:
+        - bankapp
+    script:
+    - chmod +x ./mvnw  # Move chmod here to ensure future stages can use it
+    - ./mvnw --version
+    artifacts:
+        paths:
+        - ./mvnw  # Ensure mvnw with exec permission is preserved
+        - .mvn/
+        - pom.xml
+        expire_in: 1h
+
+testing_and_sast:
+    tags:
+        - bankapp
+    image: maven
+    stage: test
+    script:
+        - ./mvnw install -DskipTests
+    variables:
+        SECRET_DETECTION_ENABLED: 'true'
+
+build:
+    image: openjdk
+    tags:
+        - bankapp
+    stage: build
+    script:
+        - ./mvnw install -DskipTests
+    artifacts:
+        paths:
+            - target/*.jar
+        expire_in: 30 days
+
+deploy:
+    image: openjdk
+    tags:
+        - bankapp
+    stage: deploy
+    script:
+        - java -jar target/*.jar
