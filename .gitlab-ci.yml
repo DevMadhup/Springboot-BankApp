@@ -19,6 +19,7 @@ code_checkout:
     tags:
         - bankapp
     script:
+    - echo "changed for code Rabbit"
     - chmod +x ./mvnw  # Move chmod here to ensure future stages can use it
     - ./mvnw --version
     artifacts:
